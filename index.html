@@ -36,20 +36,20 @@
 
 <header class="site-header">
   <div class="wrap header-inner">
-    <a href="#top" class="logo" aria-label="Aktivní škola – úvod">
+    <a href="/" class="logo" aria-label="Aktivní škola – úvod">
       <svg viewBox="0 0 40 40" aria-hidden="true"><rect width="40" height="40" rx="10" class="logo-bg"/><path d="M11 29 19 11h2l8 18" class="logo-a"/><circle cx="29" cy="12" r="3.2" class="logo-dot"/></svg>
       <span>Aktivní škola</span>
     </a>
     <nav class="nav" aria-label="Hlavní navigace">
-      <a href="#o-nas">O nás</a>
-      <a href="#krouzky">Kroužky</a>
-      <a href="#prihlaska">Přihláška</a>
-      <a href="#kontakt">Kontakt</a>
+      <a href="/#o-nas">O nás</a>
+      <a href="/#krouzky">Kroužky</a>
+      <a href="/#prihlaska">Přihláška</a>
+      <a href="/#kontakt">Kontakt</a>
     </nav>
   </div>
 </header>
 
-<main id="top">
+<main>
 
   <section class="hero">
     <div class="wrap hero-grid">
@@ -58,8 +58,8 @@
         <h1>Hýbat se.<br>Tvořit.<br><span class="accent">Rozumět technologiím.</span></h1>
         <p class="lead">Aktivní škola z. s. podporuje školní aktivity žáků. Zaměřujeme se na dvě gramotnosti, které děti potřebují pro život: <strong>pohybovou</strong> a <strong>digitální</strong>.</p>
         <div class="cta-row">
-          <a class="btn btn-primary" href="#krouzky">Naše kroužky</a>
-          <a class="btn btn-ghost" href="#prihlaska">Přihlásit dítě</a>
+          <a class="btn btn-primary" href="/#krouzky">Naše kroužky</a>
+          <a class="btn btn-ghost" href="/#prihlaska">Přihlásit dítě</a>
         </div>
       </div>
       <div class="hero-art" aria-hidden="true">
@@ -107,7 +107,7 @@
             <div><dt>Cena</dt><dd>2 900 Kč / pololetí</dd></div>
           </dl>
           <p>Základy programování, tvorba vlastních her a animací, práce s umělou inteligencí a bezpečnost na internetu. Dobrý základ i pro kroužek 3D tisku.</p>
-          <a class="more" href="krouzek-informatika.html">Více o kroužku →</a>
+          <a class="more" href="/krouzek-informatika">Více o kroužku →</a>
         </article>
         <article class="course">
           <div class="course-head">
@@ -120,7 +120,7 @@
             <div><dt>Cena</dt><dd>3 400 Kč / pololetí<br><small>vč. materiálu</small></dd></div>
           </dl>
           <p>Navrhni si vlastní věc na počítači a pak ji podrž v ruce. Modelujeme v programu Tinkercad (zdarma, běží v prohlížeči) a tiskneme na tiskárnách Original Prusa MK4S a MINI+. Nic nemusíš umět dopředu – stačí chuť tvořit. Tiskárnu z bezpečnostních důvodů obsluhuje jen dospělý.</p>
-          <a class="more" href="krouzek-3d-tisk.html">Více o kroužku →</a>
+          <a class="more" href="/krouzek-3d-tisk">Více o kroužku →</a>
         </article>
       </div>
     </div>
@@ -137,7 +137,7 @@
       </ul>
       <p>Obratem Vám pošleme potvrzení a platební údaje.</p>
       <a class="btn btn-primary" href="mailto:info@aktivniskola.org?subject=P%C5%99ihl%C3%A1%C5%A1ka%20do%20krou%C5%BEku&amp;body=Krou%C5%BEek%3A%20%0AJm%C3%A9no%20a%20p%C5%99%C3%ADjmen%C3%AD%20d%C3%ADt%C4%9Bte%3A%20%0AT%C5%99%C3%ADda%3A%20%0AZ%C3%A1konn%C3%BD%20z%C3%A1stupce%3A%20%0ATelefon%3A%20%0A">Napsat přihlášku</a>
-      <p class="note">Osobní údaje zpracováváme pouze pro účely organizace kroužku. <a href="ochrana-osobnich-udaju.html">Zásady ochrany osobních údajů</a>.</p>
+      <p class="note">Osobní údaje zpracováváme pouze pro účely organizace kroužku. <a href="/ochrana-osobnich-udaju">Zásady ochrany osobních údajů</a>.</p>
     </div>
   </section>
 
@@ -161,10 +161,22 @@
 
 <footer class="site-footer">
   <div class="wrap">
-    <p>© <span id="y">2026</span> Aktivní škola z. s. · <a href="ochrana-osobnich-udaju.html">Ochrana osobních údajů</a></p>
+    <p>© <span id="y">2026</span> Aktivní škola z. s. · <a href="/ochrana-osobnich-udaju">Ochrana osobních údajů</a></p>
   </div>
 </footer>
 
 <script>document.getElementById('y').textContent=new Date().getFullYear();</script>
+<script>
+/* Čistá adresa: posun na sekci bez #kotvy v URL */
+(function(){
+  function go(id){var el=document.getElementById(id); if(el){el.scrollIntoView({behavior:'smooth'});}}
+  document.addEventListener('click',function(e){
+    var a=e.target.closest('a[href^="/#"]'); if(!a) return;
+    e.preventDefault(); go(a.getAttribute('href').slice(2));
+    history.replaceState(null,'','/');
+  });
+  if(location.hash){var id=location.hash.slice(1); history.replaceState(null,'','/'); window.addEventListener('load',function(){go(id);});}
+})();
+</script>
 </body>
 </html>
