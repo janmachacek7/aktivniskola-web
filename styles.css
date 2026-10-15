@@ -126,3 +126,20 @@ p { margin: 0 0 1em; }
 .facts dd small { font-weight: 400; color: var(--muted); }
 .checklist { margin: 0 0 1em; padding-left: 1.2em; }
 .checklist li { margin-bottom: .3em; }
+
+/* Podstránky kroužků */
+.hero-sub { padding-bottom: clamp(32px, 5vw, 56px); }
+.hero-sub h1 { font-size: clamp(2.2rem, 5vw, 3.6rem); }
+.eyebrow a { color: inherit; }
+.accent-make { color: var(--make); }
+.facts-wide { grid-template-columns: repeat(4, 1fr); max-width: 760px; margin-top: 28px; }
+@media (max-width: 640px) { .facts-wide { grid-template-columns: 1fr 1fr; } }
+.card-make { border-top-color: var(--make); }
+.cards-4 { grid-template-columns: repeat(2, 1fr); }
+@media (max-width: 820px) { .cards-4 { grid-template-columns: 1fr; } }
+.tech-list { display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 20px; }
+.tech { background: var(--card); border: 1px solid var(--line); border-radius: var(--radius); padding: 24px; }
+.tech p { color: var(--muted); margin: 0 0 .6em; }
+.tech a { font-weight: 600; font-size: .95rem; }
+.more { display: inline-block; margin-top: 16px; font-weight: 600; text-decoration: none; }
+.more:hover { text-decoration: underline; }
