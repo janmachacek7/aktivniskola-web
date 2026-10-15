@@ -123,3 +123,4 @@ p { margin: 0 0 1em; }
 
 .prose { padding: clamp(40px, 7vw, 80px) 0; }
 .prose h2 { font-size: 1.4rem; margin-top: 1.6em; }
+.facts dd small { font-weight: 400; color: var(--muted); }
