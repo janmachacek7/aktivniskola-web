@@ -4,10 +4,10 @@
  * Vložit do: Tabulka „VÝSLEDKY Uteč z AI laboratoře“ → Rozšíření → Apps Script
  * Nasadit:   Nasadit → Nové nasazení → Webová aplikace
  *            Spustit jako: Já · Kdo má přístup: Kdokoli
- * Hra posílá ID token Google; skript ho ověří u Googlu (aud = CLIENT_ID, doména jak6.cz),
+ * Hra posílá ID token Google; skript ho ověří u Googlu (aud = CLIENT_ID, případně doména HD),
  * takže zapisovat může jen hráč skutečně přihlášený přes Google (libovolný účet).
  */
-const CLIENT_ID = 'DOPLNIT.apps.googleusercontent.com'; // stejný jako v index.html
+const CLIENT_ID = '212607744830-77cn0l9ct636g6858d608vst8l1n0gi3.apps.googleusercontent.com'; // stejný jako v index.html
 const HD = '';   // prázdné = libovolný účet Google; 'jak6.cz' = jen školní účty
 
 const LOG = 'Log';
