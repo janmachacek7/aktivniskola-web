@@ -137,7 +137,11 @@ function ensureStats_(ss) {
     '=IFERROR(AVERAGEIF(' + D + ',"✅ utekl",' + F + '),"")',
     '=IFERROR(MEDIAN(FILTER(' + F + ',' + D + '="✅ utekl")),"")',
     '', '=IFERROR(AVERAGEIF(' + D + ',"✅ utekl",' + P + 'H2:H),"")']);
-  sh.getRange(1, 1, rows.length, 6).setValues(rows);
+  // vzorce přes setFormula (anglická syntaxe s čárkou funguje v každém národním prostředí)
+  rows.forEach((row, i) => row.forEach((v, j) => {
+    const c = sh.getRange(i + 1, j + 1);
+    if (typeof v === 'string' && v.charAt(0) === '=') c.setFormula(v); else c.setValue(v);
+  }));
   sh.getRange(1, 1, 1, 6).setFontWeight('bold').setBackground('#e8f0fe');
   sh.getRange(2, 3, rows.length - 1, 2).setNumberFormat('[m]:ss');
   sh.getRange(2, 5, rows.length - 1, 2).setNumberFormat('0.0');
@@ -147,4 +151,12 @@ function ensureStats_(ss) {
 
 function out_(o) {
   return ContentService.createTextOutput(JSON.stringify(o)).setMimeType(ContentService.MimeType.JSON);
+}
+
+/** Ruční údržba: znovu vytvoří list Statistika (spustit z editoru). */
+function obnovitStatistiku() {
+  const ss = SpreadsheetApp.openById(SHEET_ID);
+  const st = ss.getSheetByName('Statistika');
+  if (st) ss.deleteSheet(st);
+  ensureStats_(ss);
 }
