@@ -40,6 +40,8 @@ table.strip tr.top td{color:var(--acc);font-weight:900}
 table.strip th{font-size:13px;color:var(--muted);padding-right:8px;text-align:right;font-weight:700}
 .lamps{display:flex;gap:14px;justify-content:center;margin:14px 0}
 .lamp{width:62px;height:62px;border-radius:50%;background:#2a3266;border:3px solid #3c4790}
+.lampw{display:flex;flex-direction:column;align-items:center;gap:6px}
+.lampw b{font-size:24px;color:var(--warn)}
 .lamp.on{background:#ffd75e;border-color:#fff1b8;box-shadow:0 0 22px #ffd75e}
 .mini{display:inline-flex;gap:5px;vertical-align:middle;margin-right:10px}
 .mini span{width:20px;height:20px;border-radius:50%;background:#2a3266;border:2px solid #3c4790}
@@ -158,13 +160,13 @@ R[1]=()=>{
 // 2 — binary
 R[2]=()=>{
   const mini=b=>`<span class="mini">${b.split("").map(x=>`<span class="${x==="1"?"on":""}"></span>`).join("")}</span>`;
-  const c=card("Zámek 2 / 5 · 💡 Světelný zámek","Počítače počítají světly",`
-  <p>Počítač zná jen <b>zapnuto</b> a <b>vypnuto</b>. Takhle ROBI zapisuje čísla:</p>
-  <div class="ex"><div>${mini("00001")}= 1</div><div>${mini("00010")}= 2</div><div>${mini("00011")}= 3</div><div>${mini("00101")}= 5</div><div>${mini("01000")}= 8</div><div>${mini("01001")}= 9</div></div>
-  <p>Jaké číslo svítí na zámku?</p>
-  <div class="lamps"><div class="lamp on"></div><div class="lamp"></div><div class="lamp on"></div><div class="lamp on"></div><div class="lamp"></div></div>`);
+  const c=card("Zámek 2 / 5 · 💡 Světelný zámek","Počítače počítají žárovkami",`
+  <p>Počítač zná jen <b>zapnuto</b> a <b>vypnuto</b>. Každá žárovka má své <b>číslo</b>. Když svítí, číslo se <b>počítá</b>. Když nesvítí, nepočítá se.</p>
+  <div class="ex"><div>${mini("00001")}= 1</div><div>${mini("00011")}= 2 + 1 = 3</div><div>${mini("00101")}= 4 + 1 = 5</div><div>${mini("01010")}= 8 + 2 = 10</div></div>
+  <p>Jaké číslo svítí na zámku? Sečtěte čísla <b>svítících</b> žárovek.</p>
+  <div class="lamps">${[[16,1],[8,0],[4,1],[2,1],[1,0]].map(([n,on])=>`<div class="lampw"><div class="lamp${on?" on":""}"></div><b>${n}</b></div>`).join("")}</div>`);
   c.appendChild(textLock(2,"číslo"));
-  c.appendChild(hints(2,["Každá lampa má svou hodnotu. Lampa vlevo má vždy dvakrát víc než lampa vpravo od ní.","Hodnoty lamp zleva: 16 · 8 · 4 · 2 · 1. Sečtěte jen ty, které svítí."]));
+  c.appendChild(hints(2,["Svítí 3 žárovky. Nesvítící (8 a 1) vůbec nepočítejte.","Spočítejte: 16 + 4 + 2"]));
   return c;
 };
 // 3 — prompt
