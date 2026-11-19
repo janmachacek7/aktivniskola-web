@@ -1,0 +1,253 @@
+<!DOCTYPE html>
+<html lang="cs">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Uteč z AI laboratoře · Aktivní škola</title>
+<meta name="description" content="Online úniková hra z informatiky pro děti: šifra, binární čísla, prompty, hesla a algoritmy.">
+<link rel="icon" href="/favicon.svg" type="image/svg+xml">
+<link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;700;900&display=swap" rel="stylesheet">
+<style>
+:root{--bg:#0f1530;--panel:#1a2350;--ink:#eef2ff;--muted:#a9b3e0;--acc:#38e1b0;--warn:#ffc35c;--bad:#ff6b6b;--line:#33408a}
+*{box-sizing:border-box}
+body{margin:0;font-family:Nunito,system-ui,sans-serif;background:radial-gradient(circle at 20% 0%,#22307a,var(--bg) 60%);color:var(--ink);min-height:100vh}
+header{display:flex;flex-wrap:wrap;gap:12px;align-items:center;justify-content:space-between;padding:12px 20px;border-bottom:1px solid var(--line);background:#0f1530cc;position:sticky;top:0;z-index:5}
+h1{font-size:21px;margin:0}
+.hud{display:flex;flex-wrap:wrap;gap:16px;align-items:center;font-weight:800;font-size:18px}
+.bag{display:flex;gap:6px}
+.slot{width:34px;height:40px;border:2px dashed var(--line);border-radius:8px;display:grid;place-items:center;font-size:22px;font-weight:900;color:var(--muted)}
+.slot.on{border:2px solid var(--acc);color:var(--acc);background:#38e1b01a}
+main{max-width:920px;margin:0 auto;padding:22px 16px 60px}
+.card{background:var(--panel);border:1px solid var(--line);border-radius:18px;padding:22px 24px;margin-bottom:16px}
+.tag{display:inline-block;background:#38e1b022;color:var(--acc);border-radius:99px;padding:3px 12px;font-weight:800;font-size:14px}
+h2{margin:8px 0 8px;font-size:28px}
+p,li{font-size:19px;line-height:1.5}
+.big{font-family:ui-monospace,Consolas,monospace;font-size:46px;letter-spacing:12px;font-weight:900;color:var(--warn);text-align:center;margin:14px 0}
+input[type=text]{font:inherit;font-size:22px;padding:10px 14px;border-radius:12px;border:2px solid var(--line);background:#0b1027;color:var(--ink);width:min(100%,380px)}
+input[type=text]:focus{outline:none;border-color:var(--acc)}
+button{font:inherit;font-weight:800;font-size:18px;border:0;border-radius:12px;padding:10px 18px;cursor:pointer;background:var(--acc);color:#06281f}
+button.ghost{background:transparent;color:var(--muted);border:2px solid var(--line)}
+button.arrow{font-size:28px;width:62px;height:56px;padding:0;background:#2a3680;color:var(--ink)}
+button:disabled{opacity:.4;cursor:not-allowed}
+.row{display:flex;flex-wrap:wrap;gap:10px;align-items:center;margin-top:14px}
+.msg{min-height:28px;font-weight:800;font-size:19px;margin-top:12px}
+.ok{color:var(--acc)} .no{color:var(--bad)} .muted{color:var(--muted)}
+.hint{background:#ffc35c1a;border-left:4px solid var(--warn);padding:10px 14px;border-radius:8px;margin-top:10px;font-size:18px}
+.scroll{overflow-x:auto}
+table.strip{border-collapse:collapse;margin:12px auto;font-family:ui-monospace,Consolas,monospace;font-size:19px}
+table.strip td{border:1px solid var(--line);min-width:28px;text-align:center;padding:4px 2px}
+table.strip tr.top td{color:var(--acc);font-weight:900}
+table.strip th{font-size:13px;color:var(--muted);padding-right:8px;text-align:right;font-weight:700}
+.lamps{display:flex;gap:14px;justify-content:center;margin:14px 0}
+.lamp{width:62px;height:62px;border-radius:50%;background:#2a3266;border:3px solid #3c4790}
+.lamp.on{background:#ffd75e;border-color:#fff1b8;box-shadow:0 0 22px #ffd75e}
+.mini{display:inline-flex;gap:5px;vertical-align:middle;margin-right:10px}
+.mini span{width:20px;height:20px;border-radius:50%;background:#2a3266;border:2px solid #3c4790}
+.mini span.on{background:#ffd75e;border-color:#fff1b8}
+.ex{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px 24px;font-size:20px;font-weight:800;margin:8px 0}
+.opts{display:grid;gap:10px;margin-top:10px}
+.opt{text-align:left;background:#0b1027;color:var(--ink);border:2px solid var(--line);font-weight:700;font-size:18px;line-height:1.4}
+.opt b{color:var(--warn);margin-right:8px}
+.opt:hover{border-color:var(--acc)}
+.checks{list-style:none;padding:0;margin:10px 0}
+.checks li{font-size:18px}
+.warn{background:#ff6b6b1a;border-left:4px solid var(--bad);padding:10px 14px;border-radius:8px;font-size:17px}
+.maze{display:grid;grid-template-columns:repeat(6,58px);gap:4px;justify-content:center;margin:12px 0}
+.cell{width:58px;height:58px;border-radius:10px;background:#0b1027;display:grid;place-items:center;font-size:32px}
+.cell.wall{background:#4a3b6b}
+.cell.trail{background:#38e1b033}
+.cell.bump{background:#ff6b6b88}
+.prog{display:flex;flex-wrap:wrap;gap:6px;min-height:46px;padding:8px;border:2px dashed var(--line);border-radius:12px;font-size:26px}
+.overlay{position:fixed;inset:0;background:#05081bcc;display:grid;place-items:center;z-index:10;padding:16px}
+.overlay .card{max-width:520px;text-align:center}
+.letter{font-size:80px;font-weight:900;color:var(--acc);line-height:1}
+.win{text-align:center}
+.win .big{color:var(--acc)}
+footer{text-align:center;color:var(--muted);font-size:14px;padding:10px}
+</style>
+</head>
+<body>
+<header>
+  <h1>🧪 Uteč z AI laboratoře</h1>
+  <div class="hud">
+    <span id="teamLbl"></span>
+    <span>⏱️ <span id="clock">00:00</span></span>
+    <div class="bag" id="bag" title="Batoh s písmeny kódu"></div>
+  </div>
+</header>
+<main id="stage"></main>
+<footer><a href="/" style="color:inherit">Aktivní škola</a> · kroužek informatiky · <button class="ghost" id="resetBtn" style="font-size:13px;padding:4px 10px">Začít znovu</button></footer>
+<div id="ov"></div>
+
+<script>
+(function(){
+const LETTERS=["V","O","L","N","O"];
+const ANS={1:"S0xJQw==",2:"MjI=",6:"Vk9MTk8="};
+const KEY="ai-lab-unikovka-v1";
+const $=s=>document.querySelector(s);
+const norm=s=>s.normalize("NFD").replace(/[̀-ͯ]/g,"").toUpperCase().replace(/\s+/g,"");
+const fresh=()=>({team:"",t0:0,pen:0,room:0,bag:[],hints:{},tEnd:0,star:false});
+let S=load()||fresh();
+function load(){try{return JSON.parse(localStorage.getItem(KEY))}catch(e){return null}}
+function save(){try{localStorage.setItem(KEY,JSON.stringify(S))}catch(e){}}
+
+function elapsed(){if(!S.t0)return 0;const end=S.tEnd||Date.now();return Math.floor((end-S.t0)/1000)+S.pen}
+function fmt(sec){const m=Math.floor(sec/60),s=sec%60;return String(m).padStart(2,"0")+":"+String(s).padStart(2,"0")}
+function hud(){
+  $("#clock").textContent=fmt(elapsed());
+  $("#teamLbl").textContent=S.team?"👥 "+S.team:"";
+  const b=$("#bag");b.innerHTML="";
+  LETTERS.forEach((_,i)=>{const d=document.createElement("div");d.className="slot"+(S.bag[i]?" on":"");d.textContent=S.bag[i]||"?";b.appendChild(d)});
+}
+setInterval(hud,1000);
+
+function el(html){const t=document.createElement("template");t.innerHTML=html.trim();return t.content.firstElementChild}
+function card(tag,title,body){return el(`<section class="card"><span class="tag">${tag}</span><h2>${title}</h2>${body}</section>`)}
+
+function hints(room,list){
+  const box=el(`<div><div class="hl"></div><div class="row"><button class="ghost hb">💡 Nápověda (+1 min)</button></div></div>`);
+  const draw=()=>{const n=S.hints[room]||0;box.querySelector(".hl").innerHTML=list.slice(0,n).map(h=>`<div class="hint">💡 ${h}</div>`).join("");
+    const btn=box.querySelector(".hb");btn.disabled=n>=list.length;if(n>=list.length)btn.textContent="💡 Žádná další nápověda"};
+  box.querySelector(".hb").onclick=()=>{S.hints[room]=(S.hints[room]||0)+1;S.pen+=60;save();draw();hud()};
+  draw();return box;
+}
+function solved(room,extra){
+  S.bag[room-1]=LETTERS[room-1];S.room=room+1;save();hud();
+  const o=el(`<div class="overlay"><div class="card"><div style="font-size:22px;font-weight:900">✅ Zámek otevřen!</div>
+    <p>${extra||""}Do batohu získáváte písmeno:</p><div class="letter">${LETTERS[room-1]}</div>
+    <div class="row" style="justify-content:center"><button id="go">Další místnost ➜</button></div></div></div>`);
+  $("#ov").appendChild(o);o.querySelector("#go").onclick=()=>{o.remove();render()};
+}
+function textLock(room,label){
+  const w=el(`<div><div class="row"><input type="text" placeholder="${label}" autocomplete="off"><button>🔓 Odemknout</button></div><div class="msg"></div></div>`);
+  const inp=w.querySelector("input"),msg=w.querySelector(".msg");
+  const go=()=>{const v=norm(inp.value);if(!v)return;let ok=false;try{ok=btoa(v)===ANS[room]}catch(e){}
+    if(ok){room===6?win():solved(room)}else{msg.className="msg no";msg.textContent="❌ Zámek se neotevřel. Zkuste to znovu.";inp.select()}};
+  w.querySelector("button").onclick=go;inp.onkeydown=e=>{if(e.key==="Enter")go()};
+  setTimeout(()=>inp.focus(),50);return w;
+}
+
+const R=[];
+// 0 — start
+R[0]=()=>{
+  const c=card("Začátek mise","Robot ROBI zamkl laboratoř!",`
+  <p>Laboratorní robot <b>ROBI</b> se zasekl a zamkl všechny dveře. Vy jste uvnitř. 😱</p>
+  <p>Čeká Vás <b>5 zámků</b>. Každý otevřený zámek Vám dá <b>1 písmeno</b> do batohu (nahoře vpravo). Z písmen složíte kód od hlavních dveří.</p>
+  <p>⏱️ Měří se čas. Nápověda přidá <b>+1 minutu</b>. Vyhrává tým, který uteče nejrychleji.</p>
+  <p><b>Název týmu</b> (žádná skutečná jména):</p>`);
+  const w=el(`<div><div class="row"><input type="text" maxlength="24" placeholder="např. Kyberlvi"><button>🚀 Start</button></div><div class="msg"></div></div>`);
+  const inp=w.querySelector("input");
+  const go=()=>{const t=inp.value.trim();if(!t){w.querySelector(".msg").className="msg no";w.querySelector(".msg").textContent="Napište název týmu.";return}
+    S=fresh();S.team=t;S.t0=Date.now();S.room=1;save();hud();render()};
+  w.querySelector("button").onclick=go;inp.onkeydown=e=>{if(e.key==="Enter")go()};
+  c.appendChild(w);setTimeout(()=>inp.focus(),50);return c;
+};
+// 1 — Caesar
+R[1]=()=>{
+  const A="ABCDEFGHIJKLMNOPQRSTUVWXYZ".split("");
+  const top=A.map(x=>`<td>${x}</td>`).join(""),bot=A.map((_,i)=>`<td>${A[(i+3)%26]}</td>`).join("");
+  const c=card("Zámek 1 / 5 · 🔐 Šifrovací dveře","Tajná zpráva na displeji",`
+  <p>ROBI zašifroval heslo jako Julius Caesar: každé písmeno posunul v abecedě <b>o 3 místa dál</b>.</p>
+  <div class="big">N O L F</div>
+  <p>Najděte písmeno šifry ve <b>spodním</b> řádku a přečtěte písmeno <b>nad ním</b>.</p>
+  <div class="scroll"><table class="strip"><tr class="top"><th>správně</th>${top}</tr><tr><th>šifra</th>${bot}</tr></table></div>`);
+  c.appendChild(textLock(1,"rozluštěné slovo"));
+  c.appendChild(hints(1,["Písmeno N ve spodním řádku – nad ním je písmeno K. To je první písmeno hesla.","Je to věc, kterou se odemykají dveře. 🗝️"]));
+  return c;
+};
+// 2 — binary
+R[2]=()=>{
+  const mini=b=>`<span class="mini">${b.split("").map(x=>`<span class="${x==="1"?"on":""}"></span>`).join("")}</span>`;
+  const c=card("Zámek 2 / 5 · 💡 Světelný zámek","Počítače počítají světly",`
+  <p>Počítač zná jen <b>zapnuto</b> a <b>vypnuto</b>. Takhle ROBI zapisuje čísla:</p>
+  <div class="ex"><div>${mini("00001")}= 1</div><div>${mini("00010")}= 2</div><div>${mini("00011")}= 3</div><div>${mini("00101")}= 5</div><div>${mini("01000")}= 8</div><div>${mini("01001")}= 9</div></div>
+  <p>Jaké číslo svítí na zámku?</p>
+  <div class="lamps"><div class="lamp on"></div><div class="lamp"></div><div class="lamp on"></div><div class="lamp on"></div><div class="lamp"></div></div>`);
+  c.appendChild(textLock(2,"číslo"));
+  c.appendChild(hints(2,["Každá lampa má svou hodnotu. Lampa vlevo má vždy dvakrát víc než lampa vpravo od ní.","Hodnoty lamp zleva: 16 · 8 · 4 · 2 · 1. Sečtěte jen ty, které svítí."]));
+  return c;
+};
+// 3 — prompt
+R[3]=()=>{
+  const c=card("Zámek 3 / 5 · 🤖 Hlasový zámek","Řekněte ROBIMU správný prompt",`
+  <p>Dveře otevře jen <b>nejlepší</b> a zároveň <b>bezpečný</b> prompt. Pozor: za každou chybu <b>+30 s</b>.</p>`);
+  const opts=[
+    ["A","nakresli psa","no","Málo informací – ROBI neví, jaký pes, kde je a jak má obrázek vypadat."],
+    ["B","Nakresli mého psa Rexe. Jmenuju se Tomáš Novák a bydlím v Lipové ulici 7.","no","Stop! 🛡️ Tenhle prompt prozrazuje jméno a adresu. To do AI nikdy nepíšeme."],
+    ["C","Nakresli veselého hnědého psa, který hraje fotbal na školním hřišti. Styl: barevný komiks.","ok",""],
+    ["D","Nakresli psa a ať je to hezký.","no","„Hezký“ je pro ROBIHO záhada. Co přesně má na obrázku být?"]];
+  const box=el(`<div class="opts"></div>`),msg=el(`<div class="msg"></div>`);
+  opts.forEach(([l,t,r,f])=>{const b=el(`<button class="opt"><b>${l}</b></button>`);b.appendChild(document.createTextNode(t));
+    b.onclick=()=>{if(r==="ok"){solved(3,"Přesně tak: CO, KDE, JAK a žádné osobní údaje. ")}else{S.pen+=30;save();hud();msg.className="msg no";msg.textContent="❌ "+f}};box.appendChild(b)});
+  c.appendChild(box);c.appendChild(msg);
+  c.appendChild(hints(3,["Dobrý prompt říká CO chci, KDE se to děje a JAK to má vypadat.","Jeden prompt prozrazuje osobní údaje – ten ROBI nesmí dostat nikdy."]));
+  return c;
+};
+// 4 — password
+R[4]=()=>{
+  const c=card("Zámek 4 / 5 · 🛡️ Trezor s heslem","Vymyslete heslo, které hacker neprolomí",`
+  <div class="warn">⚠️ Vymyslete <b>úplně nové</b> heslo. Nikdy sem nepište své skutečné heslo!</div>
+  <p>Trezor se zamkne jen silným heslem. Musí splnit všech 5 pravidel:</p>`);
+  const rules=[["aspoň 12 znaků",v=>v.length>=12],["velké písmeno (A–Z)",v=>/[A-Z]/.test(v)],["malé písmeno (a–z)",v=>/[a-z]/.test(v)],["číslo (0–9)",v=>/[0-9]/.test(v)],["speciální znak (! - # ? …)",v=>/[^A-Za-z0-9\s]/.test(v.normalize("NFD").replace(/[̀-ͯ]/g,""))]];
+  const w=el(`<div><input type="text" placeholder="Vaše nové heslo" autocomplete="off" spellcheck="false"><ul class="checks"></ul><div class="row"><button disabled>🔒 Zamknout trezor</button></div></div>`);
+  const inp=w.querySelector("input"),ul=w.querySelector("ul"),btn=w.querySelector("button");
+  const check=()=>{const v=inp.value;let all=true;ul.innerHTML="";rules.forEach(([t,f])=>{const ok=f(v);all=all&&ok;const li=document.createElement("li");li.className=ok?"ok":"muted";li.textContent=(ok?"✅ ":"⬜ ")+t;ul.appendChild(li)});btn.disabled=!all};
+  inp.oninput=check;check();
+  btn.onclick=()=>{inp.value="";solved(4,"Silné heslo je dlouhé a pestré. Heslo nikomu neříkejte! ")};
+  c.appendChild(w);setTimeout(()=>inp.focus(),50);
+  c.appendChild(hints(4,["Zkuste heslo z několika slov: třeba tři zvířata a číslo.","Příklad stylu (nepoužívejte ho!): Zeleny-Drak-Skace-7"]));
+  return c;
+};
+// 5 — maze
+R[5]=()=>{
+  const MAP=["S..#..","##.#.#",".....#",".###..","...##.","##...E"];
+  const D={"→":[0,1],"←":[0,-1],"↑":[-1,0],"↓":[1,0]};
+  const MAX=16;let prog=[],busy=false;
+  const c=card("Zámek 5 / 5 · 🗺️ Výstupní chodba","Naprogramujte ROBIHO ke dveřím",`
+  <p>Poskládejte <b>algoritmus</b>: každá šipka posune ROBIHO o 1 políčko. Nesmí narazit do zdi 🧱. Pak klikněte <b>▶ Spustit</b>.</p>
+  <p class="muted">⭐ Výzva: najděte nejkratší cestu.</p>`);
+  const grid=el(`<div class="maze"></div>`);
+  const draw=(r,cc,trail,bump)=>{grid.innerHTML="";MAP.forEach((row,i)=>row.split("").forEach((ch,j)=>{const d=document.createElement("div");d.className="cell"+(ch==="#"?" wall":"")+(trail&&trail.has(i+","+j)?" trail":"")+(bump&&bump[0]===i&&bump[1]===j?" bump":"");
+    d.textContent=(i===r&&j===cc)?"🤖":ch==="#"?"🧱":ch==="E"?"🚪":"";grid.appendChild(d)}))};
+  draw(0,0);
+  const pv=el(`<div class="prog"></div>`),msg=el(`<div class="msg"></div>`);
+  const showProg=()=>{pv.innerHTML=prog.length?prog.map(x=>`<span>${x}</span>`).join(""):`<span class="muted" style="font-size:17px">sem se skládají příkazy (${MAX} max.)</span>`};showProg();
+  const ctr=el(`<div class="row"></div>`);
+  Object.keys(D).forEach(k=>{const b=el(`<button class="arrow">${k}</button>`);b.onclick=()=>{if(busy||prog.length>=MAX)return;prog.push(k);showProg()};ctr.appendChild(b)});
+  const undo=el(`<button class="ghost">⌫ Smazat poslední</button>`);undo.onclick=()=>{if(!busy){prog.pop();showProg()}};
+  const clr=el(`<button class="ghost">🗑️ Vše</button>`);clr.onclick=()=>{if(!busy){prog=[];showProg();draw(0,0);msg.textContent=""}};
+  const run=el(`<button>▶ Spustit</button>`);
+  const sleep=ms=>new Promise(r=>setTimeout(r,ms));
+  run.onclick=async()=>{if(busy||!prog.length)return;busy=true;msg.textContent="";let r=0,cc=0;const tr=new Set(["0,0"]);draw(r,cc,tr);
+    for(const k of prog){await sleep(380);const nr=r+D[k][0],nc=cc+D[k][1];
+      if(nr<0||nr>5||nc<0||nc>5||MAP[nr][nc]==="#"){draw(r,cc,tr,[Math.min(Math.max(nr,0),5),Math.min(Math.max(nc,0),5)]);msg.className="msg no";msg.textContent="💥 Bum! ROBI narazil. Opravte algoritmus a zkuste to znovu.";busy=false;return}
+      r=nr;cc=nc;tr.add(r+","+cc);draw(r,cc,tr)}
+    if(MAP[r][cc]==="E"){S.star=prog.length<=10;save();busy=false;solved(5,S.star?"⭐ Nejkratší cesta – 10 kroků! ":"Funguje to! (Jde to i kratší… 😉) ")}
+    else{msg.className="msg no";msg.textContent="🤔 ROBI se zastavil, ale dveře jsou jinde. Přidejte další kroky.";busy=false}};
+  ctr.appendChild(undo);ctr.appendChild(clr);ctr.appendChild(run);
+  c.appendChild(grid);c.appendChild(pv);c.appendChild(ctr);c.appendChild(msg);
+  c.appendChild(hints(5,["Nejdřív si cestu ukažte prstem na obrazovce, pak skládejte šipky.","Začátek cesty: → → ↓ ↓ …"]));
+  return c;
+};
+// 6 — final door
+R[6]=()=>{
+  const c=card("Hlavní dveře","Poslední zámek!",`
+  <p>Máte všech 5 písmen v batohu. Zadejte je <b>ve správném pořadí</b> a utečte z laboratoře! 🏃</p>`);
+  c.appendChild(textLock(6,"kód z batohu"));return c;
+};
+function win(){S.tEnd=Date.now();S.room=7;save();hud();render()}
+R[7]=()=>{
+  const h=Object.values(S.hints).reduce((a,b)=>a+b,0);
+  const c=card("Mise splněna","🎉 Utekli jste!",`<div class="win"><p>Tým</p><div class="big tm"></div><p>Čas (včetně penalizací)</p><div class="big">${fmt(elapsed())}</div>
+  <p>💡 Nápovědy: <b>${h}</b> ${S.star?" · ⭐ nejkratší cesta":""}</p><p><b>Ukažte tuhle obrazovku panu učiteli.</b></p></div>`);
+  c.querySelector(".tm").textContent=S.team;c.querySelector(".tm").style.letterSpacing="2px";c.querySelector(".tm").style.fontSize="34px";return c;
+};
+
+function render(){const st=$("#stage");st.innerHTML="";st.appendChild((R[S.room]||R[0])());hud();window.scrollTo(0,0)}
+$("#resetBtn").onclick=()=>{const o=el(`<div class="overlay"><div class="card"><p><b>Opravdu začít znovu?</b><br>Čas i písmena se smažou.</p><div class="row" style="justify-content:center"><button class="ghost" id="n">Ne</button><button id="y">Ano, znovu</button></div></div></div>`);
+  $("#ov").appendChild(o);o.querySelector("#n").onclick=()=>o.remove();o.querySelector("#y").onclick=()=>{o.remove();S=fresh();save();render()}};
+render();
+})();
+</script>
+</body>
+</html>
