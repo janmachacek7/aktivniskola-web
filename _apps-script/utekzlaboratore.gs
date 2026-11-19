@@ -8,6 +8,7 @@
  * takže zapisovat může jen hráč skutečně přihlášený přes Google (libovolný účet).
  */
 const CLIENT_ID = '212607744830-77cn0l9ct636g6858d608vst8l1n0gi3.apps.googleusercontent.com'; // stejný jako v index.html
+const SHEET_ID = '1IbybqFHcVX_0YDP9Gq34xVDh_WBCo4A1X20SSF80nA0'; // Tabulka VÝSLEDKY na disku Aktivní školy
 const HD = '';   // prázdné = libovolný účet Google; 'jak6.cz' = jen školní účty
 
 const LOG = 'Log';
@@ -30,7 +31,7 @@ function doPost(e) {
     const lock = LockService.getScriptLock();
     lock.waitLock(15000);
     try {
-      const ss = SpreadsheetApp.getActiveSpreadsheet();
+      const ss = SpreadsheetApp.openById(SHEET_ID);
       writeLog_(ss, user, p);
       upsertSummary_(ss, user, p);
       ensureStats_(ss);
