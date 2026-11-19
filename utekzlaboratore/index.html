@@ -93,7 +93,7 @@ footer{text-align:center;color:var(--muted);font-size:14px;padding:10px}
 const CONFIG={
   CLIENT_ID:"",     // OAuth Client ID, končí na .apps.googleusercontent.com
   ENDPOINT:"",      // URL webové aplikace Apps Script, končí na /exec
-  HD:"jak6.cz"      // povolená doména školních účtů
+  HD:""            // prázdné = libovolný účet Google; např. "jak6.cz" = jen školní účty
 };
 // Bez CLIENT_ID a ENDPOINT (nebo s adresou …/#demo) se hraje anonymně a nic se neukládá.
 const AUTH_ON=!!(CONFIG.CLIENT_ID&&CONFIG.ENDPOINT)&&location.hash!=="#demo";
@@ -149,12 +149,13 @@ function onCred(resp){
 }
 function loginMsg(t){const m=$("#loginMsg");if(m){m.className="msg no";m.textContent=t}}
 function loginCard(){
-  const c=card("Vstup do laboratoře","Přihlas se školním účtem",`
-  <p>Klikni na tlačítko a vyber svůj účet <b>@${CONFIG.HD}</b>. Tvůj čas a postup uvidí pan učitel.</p>
-  <div id="gbtn"></div><div class="msg" id="loginMsg"></div>`);
+  const c=card("Vstup do laboratoře","Přihlas se účtem Google",`
+  <p>Klikni na tlačítko a vyber svůj účet Google${CONFIG.HD?" <b>@"+CONFIG.HD+"</b>":" (třeba školní)"}.</p>
+  <div id="gbtn"></div><div class="msg" id="loginMsg"></div>
+  <p class="muted" style="font-size:15px">🔒 Uložíme Tvé jméno, e-mail a průběh hry (časy, chyby, nápovědy). Pomůže nám to hru vylepšovat a učitel uvidí Tvůj výsledek. Nic dalšího nezjišťujeme. <a href="/ochrana-osobnich-udaju" style="color:inherit">Ochrana osobních údajů</a></p>`);
   let tries=0;const init=()=>{
     if(window.google&&google.accounts&&google.accounts.id){
-      google.accounts.id.initialize({client_id:CONFIG.CLIENT_ID,callback:onCred,hd:CONFIG.HD,auto_select:true,context:"signin",ux_mode:"popup"});
+      const o={client_id:CONFIG.CLIENT_ID,callback:onCred,auto_select:true,context:"signin",ux_mode:"popup"};if(CONFIG.HD)o.hd=CONFIG.HD;google.accounts.id.initialize(o);
       google.accounts.id.renderButton(c.querySelector("#gbtn"),{theme:"filled_blue",size:"large",text:"signin_with",shape:"pill",locale:"cs"});
       google.accounts.id.prompt();
     }else if(++tries<40){setTimeout(init,250)}else{loginMsg("Přihlášení se nenačetlo. Obnov stránku (F5) nebo zavolej pana učitele.")}};
@@ -313,7 +314,7 @@ function win(){S.tEnd=Date.now();S.room=7;save();hud();report("konec",6,fmt(elap
 R[7]=()=>{
   const h=Object.values(S.hints).reduce((a,b)=>a+b,0);
   const c=card("Mise splněna","🎉 Utekl(a) jsi!",`<div class="win"><div class="big tm"></div><p>Čas (včetně penalizací)</p><div class="big">${fmt(elapsed())}</div>
-  <p>💡 Nápovědy: <b>${h}</b> ${S.star?" · ⭐ nejkratší cesta":""}</p><p><b>${AUTH_ON?"Výsledek se uložil panu učiteli. ":""}Ukaž tuhle obrazovku panu učiteli.</b></p></div>`);
+  <p>💡 Nápovědy: <b>${h}</b> ${S.star?" · ⭐ nejkratší cesta":""}</p><p><b>${AUTH_ON?"Výsledek se uložil. ":""}Ukaž tuhle obrazovku panu učiteli.</b></p></div>`);
   const tm=c.querySelector(".tm");tm.textContent=S.team;tm.style.letterSpacing="2px";tm.style.fontSize="34px";
   const w=el(`<div class="win"><div class="row" style="justify-content:center"><button id="shot" style="font-size:22px;padding:14px 26px">📸 Stáhnout obrázek</button></div>
     <p class="muted" style="font-size:17px">Obrázek odevzdej v Classroomu: <b>Přidat nebo vytvořit → Soubor</b> → najdi ho ve <b>Stažených souborech</b>.</p><div class="msg"></div></div>`);

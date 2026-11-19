@@ -5,10 +5,10 @@
  * Nasadit:   Nasadit → Nové nasazení → Webová aplikace
  *            Spustit jako: Já · Kdo má přístup: Kdokoli
  * Hra posílá ID token Google; skript ho ověří u Googlu (aud = CLIENT_ID, doména jak6.cz),
- * takže zapisovat můžou jen přihlášení žáci se školním účtem.
+ * takže zapisovat může jen hráč skutečně přihlášený přes Google (libovolný účet).
  */
 const CLIENT_ID = 'DOPLNIT.apps.googleusercontent.com'; // stejný jako v index.html
-const HD = 'jak6.cz';                                     // povolená doména účtů
+const HD = '';   // prázdné = libovolný účet Google; 'jak6.cz' = jen školní účty
 
 const LOG = 'Log';
 const SUM = 'Přehled';
