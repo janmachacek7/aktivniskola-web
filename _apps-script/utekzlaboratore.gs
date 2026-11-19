@@ -33,6 +33,7 @@ function doPost(e) {
       const ss = SpreadsheetApp.getActiveSpreadsheet();
       writeLog_(ss, user, p);
       upsertSummary_(ss, user, p);
+      ensureStats_(ss);
     } finally {
       lock.releaseLock();
     }
@@ -109,6 +110,38 @@ function upsertSummary_(ss, user, p) {
   sh.getRange(r, 1).setNumberFormat('d.M. H:mm');
   [6, 7, 10, 13, 16, 19, 21].forEach(c => sh.getRange(r, c).setNumberFormat('[m]:ss'));
   sh.getRange(r, 24).setNumberFormat('H:mm:ss');
+}
+
+/** List Statistika: jak dlouho trvají jednotlivé zámky (vzorce se přepočítávají samy). */
+function ensureStats_(ss) {
+  if (ss.getSheetByName('Statistika')) return;
+  const sh = ss.insertSheet('Statistika');
+  const P = "'" + SUM + "'!";
+  const locks = [
+    ['1 🔐 Šifra', 'J', 'K', 'L'], ['2 💡 Binární čísla', 'M', 'N', 'O'], ['3 🤖 Prompt', 'P', 'Q', 'R'],
+    ['4 🛡️ Heslo', 'S', null, 'T'], ['5 🗺️ Bludiště', 'U', 'V', 'W']];
+  const rows = [['Zámek', 'Hráčů', 'Průměrný čas', 'Medián času', 'Průměr chyb', 'Průměr nápověd']];
+  locks.forEach(([name, t, w, h]) => {
+    const T = P + t + '2:' + t;
+    rows.push([name,
+      '=COUNTIF(' + T + ',">0")',
+      '=IFERROR(AVERAGEIF(' + T + ',">0"),"")',
+      '=IFERROR(MEDIAN(FILTER(' + T + ',' + T + '>0)),"")',
+      w ? '=IFERROR(AVERAGEIF(' + T + ',">0",' + P + w + '2:' + w + '),"")' : '–',
+      '=IFERROR(AVERAGEIF(' + T + ',">0",' + P + h + '2:' + h + '),"")']);
+  });
+  const D = P + 'D2:D', F = P + 'F2:F';
+  rows.push(['🏁 Celá hra (utekli)',
+    '=COUNTIF(' + D + ',"✅ utekl")',
+    '=IFERROR(AVERAGEIF(' + D + ',"✅ utekl",' + F + '),"")',
+    '=IFERROR(MEDIAN(FILTER(' + F + ',' + D + '="✅ utekl")),"")',
+    '', '=IFERROR(AVERAGEIF(' + D + ',"✅ utekl",' + P + 'H2:H),"")']);
+  sh.getRange(1, 1, rows.length, 6).setValues(rows);
+  sh.getRange(1, 1, 1, 6).setFontWeight('bold').setBackground('#e8f0fe');
+  sh.getRange(2, 3, rows.length - 1, 2).setNumberFormat('[m]:ss');
+  sh.getRange(2, 5, rows.length - 1, 2).setNumberFormat('0.0');
+  sh.setFrozenRows(1);
+  sh.autoResizeColumns(1, 6);
 }
 
 function out_(o) {
