@@ -69,6 +69,8 @@ footer{text-align:center;color:var(--muted);font-size:14px;padding:10px}
 .net{font-size:15px;font-weight:700;color:var(--muted)}
 .net.ok{color:var(--acc)} .net.err{color:var(--warn)}
 #gbtn{display:flex;justify-content:center;margin:18px 0 6px;min-height:44px}
+.partner{text-align:center;margin:4px 0 18px}
+.partner img{height:84px;max-width:90%}
 .who{font-size:22px;font-weight:900;color:var(--acc)}
 </style>
 <script src="https://accounts.google.com/gsi/client" async defer></script>
@@ -342,9 +344,10 @@ function downloadShot(h,msg){
   }catch(e){msg.className="msg no";msg.textContent="Obrázek se nepodařilo vytvořit. Udělej snímek obrazovky (Ctrl + Shift + Přehled oken)."}
 }
 
+const partner=()=>el(`<div class="partner"><img src="o2-bezpecne-v-siti.svg" alt="O2 Bezpečně v síti"></div>`);
 function render(){const st=$("#stage");st.innerHTML="";
-  if(AUTH_ON&&!USER){st.appendChild(loginCard());hud();return}
-  const r=R[S.room]?S.room:0;enter(r);st.appendChild(R[r]());hud();window.scrollTo(0,0)}
+  if(AUTH_ON&&!USER){st.appendChild(partner());st.appendChild(loginCard());hud();return}
+  const r=R[S.room]?S.room:0;enter(r);if(r===0)st.appendChild(partner());st.appendChild(R[r]());hud();window.scrollTo(0,0)}
 $("#resetBtn").onclick=()=>{const o=el(`<div class="overlay"><div class="card"><p><b>Opravdu začít znovu?</b><br>Čas i písmena se smažou.</p><div class="row" style="justify-content:center"><button class="ghost" id="n">Ne</button><button id="y">Ano, znovu</button></div></div></div>`);
   $("#ov").appendChild(o);o.querySelector("#n").onclick=()=>o.remove();o.querySelector("#y").onclick=()=>{o.remove();const e=S.email,t=S.team;S=fresh();S.email=e;S.team=t;save();render()}};
 setNet("");render();
