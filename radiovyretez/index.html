@@ -59,9 +59,9 @@ footer{text-align:center;color:var(--muted);font-size:14px;margin-top:14px}
   <h1>📡 Rádiový řetěz</h1>
   <div class="sub">Štafeta přes rádio: spočítejte se, aniž byste vstali ze židle.</div>
   <div class="three">
-    <div class="box" style="border-color:#18b37e"><div class="bt">🎯 Cíl</div>Poslední micro:bit musí ukázat, <b>kolik je ve třídě dvojic</b>. Napočítáte to jen tehdy, když zpráva projde <b>všemi</b> micro:bity.</div>
+    <div class="box" style="border-color:#18b37e"><div class="bt">🎯 Cíl</div>Poslední micro:bit musí ukázat, <b>kolik nás je</b>. Napočítáte to jen tehdy, když zpráva projde <b>všemi</b> micro:bity.</div>
     <div class="box" style="border-color:var(--radio)"><div class="bt">📨 Zpráva</div>Zpráva je <b>jedno číslo</b>, tedy kolik micro:bitů už ji dostalo. Kdo ji dostane, <b>přičte 1</b>, ukáže to na displeji a <b>pošle dál</b>.</div>
-    <div class="box" style="border-color:var(--fn)"><div class="bt">📬 Kdo komu</div>Tvoje číslo je <b>adresa</b>. Posíláš jen <b>dvojici s číslem o 1 vyšším</b>. Ostatní tvou zprávu neslyší.</div>
+    <div class="box" style="border-color:var(--fn)"><div class="bt">📬 Kdo komu</div>Tvoje číslo je <b>adresa</b>. Posíláš jen <b>tomu, kdo má číslo o 1 vyšší</b>. Ostatní tvou zprávu neslyší.</div>
   </div>
 
   <div class="chain" id="chain"></div>
@@ -73,7 +73,7 @@ footer{text-align:center;color:var(--muted);font-size:14px;margin-top:14px}
       <div class="grid2">
         <div class="stack">
           <div class="hat" style="background:var(--basic)">při startu</div><br>
-          <div class="blk in" style="background:var(--var);border-color:var(--basic)">nastav <span class="pill v">moje</span> na <span class="pill">1</span> ← Vaše číslo!</div><br>
+          <div class="blk in" style="background:var(--var);border-color:var(--basic)">nastav <span class="pill v">moje</span> na <span class="pill">1</span> ← tvoje číslo!</div><br>
           <div class="blk in" style="background:var(--radio);border-color:var(--basic)">rádio nastav skupinu <span class="pill v">moje</span></div><br>
           <div class="blk in" style="background:var(--basic);border-color:var(--basic)">ukaž číslo <span class="pill v">moje</span></div>
           <div class="cat">Základní · Proměnné · Rádio</div>
@@ -88,7 +88,7 @@ footer{text-align:center;color:var(--muted);font-size:14px;margin-top:14px}
         <div class="stack">
           <div class="hat" style="background:var(--input)">při stisku tlačítka A</div><br>
           <div class="blk in" style="background:var(--fn);border-color:var(--input)">zavolej posli <span class="pill">1</span></div>
-          <div class="cat">Vstup · Funkce (startuje jen dvojice č. 1)</div>
+          <div class="cat">Vstup · Funkce (startuje jen hráč č. 1)</div>
         </div>
         <div class="stack">
           <div class="hat" style="background:var(--radio)">při přijetí rádiového čísla <span class="pill" style="background:#ffb3df">receivedNumber</span></div><br>
@@ -103,18 +103,18 @@ footer{text-align:center;color:var(--muted);font-size:14px;margin-top:14px}
     <div class="steps">
       <h2>🚀 Postup</h2>
       <div class="step"><div class="n">1</div><div>Otevři <b>makecode.microbit.org</b> → <b>Nový projekt</b>.</div></div>
-      <div class="step"><div class="n">2</div><div>Poskládej 4 skupiny bloků. Do <span class="pill v">moje</span> dej <b>číslo Vaší dvojice</b>.</div></div>
+      <div class="step"><div class="n">2</div><div>Poskládej 4 skupiny bloků. Do <span class="pill v">moje</span> dej <b>své číslo</b>.</div></div>
       <div class="step"><div class="n">3</div><div>Připoj micro:bit kabelem → <b>Stáhnout</b> → spárovat → nahrát.</div></div>
-      <div class="step"><div class="n">4</div><div>Zůstaňte u svých počítačů, rádio dosáhne přes celou třídu. Až budou všichni připravení, dvojice č. 1 zmáčkne <b>A</b>.</div></div>
-      <div class="goal">🏁 <b>Cíl:</b> poslední micro:bit ukáže, <b>kolik je Vás dvojic</b>.<br>⏱️ Změřte čas a zkuste ho zkrátit!</div>
-      <div class="think">🤔 Co se stane, když dvě dvojice zvolí <b>stejné číslo</b>?<br>🤔 A co když jedno číslo v řadě <b>chybí</b>?</div>
+      <div class="step"><div class="n">4</div><div>Zůstaňte u svých počítačů, rádio dosáhne přes celou třídu. Až budou všichni připravení, hráč č. 1 zmáčkne <b>A</b>.</div></div>
+      <div class="goal">🏁 <b>Cíl:</b> poslední micro:bit ukáže, <b>kolik nás je</b>.<br>⏱️ Změřte čas a zkuste ho zkrátit!</div>
+      <div class="think">🤔 Co se stane, když dva zvolí <b>stejné číslo</b>?<br>🤔 A co když jedno číslo v řadě <b>chybí</b>?</div>
     </div>
   </div>
   <footer>Aktivní škola · kroužek informatiky · micro:bit MakeCode</footer>
 </div>
 <script>
 // řetěz: 4 micro:bity, na každém svítí jeho číslo jako počet LED
-const N=4,ch=document.getElementById('chain');let h='';
+const N=8,ch=document.getElementById('chain');let h='';
 for(let i=1;i<=N;i++){
   let leds='';for(let k=0;k<25;k++)leds+=`<i class="${k>=10&&k<10+i?'on':''}"></i>`;
   h+=`<div class="mb"><div class="board"><div class="no">č. ${i}</div><div class="leds">${leds}</div></div><div class="grp">ukáže <b>${i}</b> · poslouchá skup. <b>${i}</b></div></div>`;
