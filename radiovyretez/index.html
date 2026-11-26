@@ -52,12 +52,37 @@ footer{text-align:center;color:var(--muted);font-size:14px;margin-top:14px}
 .box{background:var(--card);border-radius:16px;padding:12px 16px;border-left:10px solid;font-size:19px;box-shadow:0 4px 18px #0001}
 .bt{font-weight:900;font-size:22px;margin-bottom:4px}
 @media (max-width:1000px){.three{grid-template-columns:1fr}}
+
+/* === 16:9 plátno 1920×1080, škáluje se na okno === */
+html,body{height:100%;overflow:hidden;background:var(--bg)}
+.page{width:1920px;height:1080px;max-width:none;padding:26px 40px;transform-origin:0 0;position:absolute;left:0;top:0}
+h1{font-size:52px;display:inline-block;margin-right:20px}
+.sub{display:inline;font-size:26px}
+.head{margin-bottom:14px}
+.three{gap:18px;margin:0 0 14px}
+.box{font-size:21px;padding:10px 18px}
+.chain{flex-wrap:nowrap;padding:12px 16px;gap:4px}
+.mb{width:128px}
+.board{padding:8px 6px}
+.leds{grid-template-columns:repeat(5,11px);gap:4px}
+.leds i{width:11px;height:11px}
+.mb .grp{font-size:14px}
+.arrow{width:78px;font-size:13px}
+.arrow b{font-size:26px}
+.rule{margin:10px 0 0;font-size:24px}
+.cols{margin-top:14px;grid-template-columns:1.35fr 1fr}
+.stack{font-size:21px}
+.hat,.blk{margin:3px 0}
+.step{font-size:21px;margin:9px 0}
+.goal,.think{font-size:20px;margin-top:10px;padding:10px 14px}
+footer{position:absolute;bottom:8px;left:0;right:0;margin:0}
+@media (max-width:1000px){.cols,.grid2,.three{grid-template-columns:auto}}
 </style>
 </head>
 <body>
 <div class="page">
-  <h1>📡 Rádiový řetěz</h1>
-  <div class="sub">Štafeta přes rádio: spočítejte se, aniž byste vstali ze židle.</div>
+  <div class="head"><h1>📡 Rádiový řetěz</h1>
+  <div class="sub">Štafeta přes rádio: spočítejte se, aniž byste vstali ze židle.</div></div>
   <div class="three">
     <div class="box" style="border-color:#18b37e"><div class="bt">🎯 Cíl</div>Poslední micro:bit musí ukázat, <b>kolik nás je</b>. Napočítáte to jen tehdy, když zpráva projde <b>všemi</b> micro:bity.</div>
     <div class="box" style="border-color:var(--radio)"><div class="bt">📨 Zpráva</div>Zpráva je <b>jedno číslo</b>, tedy kolik micro:bitů už ji dostalo. Kdo ji dostane, <b>přičte 1</b>, ukáže to na displeji a <b>pošle dál</b>.</div>
@@ -117,11 +142,14 @@ footer{text-align:center;color:var(--muted);font-size:14px;margin-top:14px}
 const N=8,ch=document.getElementById('chain');let h='';
 for(let i=1;i<=N;i++){
   let leds='';for(let k=0;k<25;k++)leds+=`<i class="${k>=10&&k<10+i?'on':''}"></i>`;
-  h+=`<div class="mb"><div class="board"><div class="no">č. ${i}</div><div class="leds">${leds}</div></div><div class="grp">ukáže <b>${i}</b> · poslouchá skup. <b>${i}</b></div></div>`;
-  if(i<N)h+=`<div class="arrow"><b>📶→</b>pošle číslo <u>${i}</u><br>do skup. ${i+1}</div>`;
+  h+=`<div class="mb"><div class="board"><div class="no">č. ${i}</div><div class="leds">${leds}</div></div><div class="grp">ukáže <b>${i}</b> · skup. <b>${i}</b></div></div>`;
+  if(i<N)h+=`<div class="arrow"><b>📶→</b>pošle <u>${i}</u><br>→ skup. ${i+1}</div>`;
 }
-h+=`<div class="arrow"><b>…</b>až k poslednímu</div>`;
+
 ch.innerHTML=h;
+const pg=document.querySelector('.page');
+function fit(){const s=Math.min(innerWidth/1920,innerHeight/1080);pg.style.transform=`scale(${s})`;pg.style.left=((innerWidth-1920*s)/2)+'px';pg.style.top=((innerHeight-1080*s)/2)+'px';}
+addEventListener('resize',fit);fit();
 </script>
 </body>
 </html>
