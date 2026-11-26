@@ -1,0 +1,262 @@
+<!DOCTYPE html>
+<html lang="cs">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Zneškodni robota · Aktivní škola</title>
+<meta name="description" content="Kooperativní hra z informatiky: technik vidí robota, expert má manuál. Podmínky, binární čísla, šifra a bludiště.">
+<link rel="icon" href="/favicon.svg" type="image/svg+xml">
+<link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;700;900&display=swap" rel="stylesheet">
+<style>
+:root{--bg:#10162e;--panel:#1b2452;--panel2:#24306a;--ink:#eef2ff;--muted:#a9b3e0;--acc:#38e1b0;--warn:#ffc35c;--bad:#ff5c7a}
+*{box-sizing:border-box}
+body{margin:0;font-family:Nunito,system-ui,sans-serif;background:var(--bg);color:var(--ink);font-size:18px;line-height:1.45}
+header{display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:10px;padding:12px 20px;background:#0b1024}
+h1{margin:0;font-size:24px}
+.hud{display:flex;gap:18px;font-weight:900;font-size:22px}
+main{max-width:1100px;margin:0 auto;padding:18px}
+button{font-family:inherit;font-size:18px;font-weight:700;border:0;border-radius:12px;padding:10px 18px;background:var(--acc);color:#062;cursor:pointer}
+button.ghost{background:var(--panel2);color:var(--ink)}
+button:disabled{opacity:.4;cursor:default}
+.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(320px,1fr));gap:16px}
+.mod{background:var(--panel);border-radius:18px;padding:16px;position:relative;min-height:260px}
+.mod h2{margin:0 0 10px;font-size:20px}
+.mod.done{outline:4px solid var(--acc)}
+.mod.done::after{content:"✅ HOTOVO";position:absolute;top:14px;right:16px;font-weight:900;color:var(--acc)}
+.mod.done .body{opacity:.35;pointer-events:none}
+.led{display:inline-block;width:14px;height:14px;border-radius:50%;background:#333;margin-left:6px;vertical-align:middle}
+/* dráty */
+.wire{display:flex;align-items:center;gap:10px;margin:8px 0;cursor:pointer}
+.wire .bar{flex:1;height:16px;border-radius:8px;border:2px solid #0006}
+.wire .lbl{width:30px;font-weight:900;color:var(--muted)}
+.wire.cut .bar{background-image:linear-gradient(90deg,transparent 46%,var(--panel) 46%,var(--panel) 54%,transparent 54%)!important}
+.wire.cut{cursor:default}
+/* binár */
+.lamps{display:flex;gap:12px;justify-content:center;margin:14px 0;padding:14px;border-radius:14px}
+.lamp{width:46px;height:46px;border-radius:50%;background:#2c335c;border:3px solid #0008}
+.lamp.on{background:#ffe066;box-shadow:0 0 22px #ffe066}
+input{font-family:inherit;font-size:22px;padding:8px 12px;border-radius:10px;border:2px solid var(--panel2);background:#0b1024;color:var(--ink);width:170px}
+.row{display:flex;gap:10px;align-items:center;flex-wrap:wrap}
+.cipher{font-size:34px;font-weight:900;letter-spacing:6px;text-align:center;margin:10px 0}
+.sym{font-size:46px;text-align:center}
+/* bludiště */
+.maze{display:grid;grid-template-columns:repeat(5,44px);gap:4px;justify-content:center;margin:6px 0}
+.cell{width:44px;height:44px;border-radius:8px;background:#2c335c;display:flex;align-items:center;justify-content:center;font-size:26px}
+.pad{display:grid;grid-template-columns:repeat(3,56px);gap:6px;justify-content:center;margin-top:8px}
+.pad button{padding:8px 0;font-size:22px}
+#ov{position:fixed;inset:0;background:#000c;display:none;align-items:center;justify-content:center;z-index:9;text-align:center}
+#ov .box{background:var(--panel);padding:30px 36px;border-radius:22px;max-width:560px}
+.start{max-width:760px;margin:30px auto;text-align:center}
+.cards{display:grid;grid-template-columns:1fr 1fr;gap:16px;margin:22px 0}
+.card{background:var(--panel);border-radius:18px;padding:20px}
+.card .big{font-size:56px}
+.muted{color:var(--muted)}
+.flash{animation:fl .5s}
+@keyframes fl{0%,100%{background:var(--panel)}50%{background:#7a1830}}
+/* manuál */
+.man{max-width:980px;margin:0 auto;background:#fffdf5;color:#1a1a1a;padding:26px 34px;border-radius:14px}
+.man h2{border-bottom:3px solid #1a1a1a;padding-bottom:4px;margin-top:30px}
+.man table{border-collapse:collapse;margin:8px 0}
+.man td,.man th{border:1px solid #888;padding:5px 12px;text-align:left}
+.man .rule{background:#eef6ff;border-left:6px solid #3a7bd5;padding:10px 14px;margin:8px 0;border-radius:6px}
+.mazes{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:18px}
+.mazes figure{margin:0;text-align:center}
+footer{text-align:center;color:var(--muted);font-size:14px;padding:20px}
+@media print{header,footer,.noprint{display:none}body{background:#fff}.man{padding:0}}
+</style>
+</head>
+<body>
+<header>
+  <h1>🤖 Zneškodni robota</h1>
+  <div class="hud" id="hud"></div>
+</header>
+<main id="app"></main>
+<footer><a href="/" style="color:inherit">Aktivní škola</a> · kroužek informatiky · kooperativní hra pro technika a experta</footer>
+<div id="ov"><div class="box" id="ovbox"></div></div>
+
+<script>
+(function(){
+"use strict";
+const $=s=>document.querySelector(s);
+const app=$("#app"), hud=$("#hud");
+const rnd=n=>Math.floor(Math.random()*n);
+const pick=a=>a[rnd(a.length)];
+const norm=s=>s.normalize("NFD").replace(/[̀-ͯ]/g,"").toUpperCase().replace(/[^A-Z0-9]/g,"");
+
+// ================= SDÍLENÁ PRAVIDLA (hra i manuál z jednoho místa) =================
+const COLORS={R:{n:"červený",c:"#e63946"},B:{n:"modrý",c:"#3a7bd5"},Y:{n:"žlutý",c:"#ffd23f"},W:{n:"bílý",c:"#f5f5f5"},K:{n:"černý",c:"#111"}};
+const ord=["první","druhý","třetí","čtvrtý","pátý"];
+const cnt=(w,c)=>w.filter(x=>x===c).length;
+const lastIdx=(w,c)=>w.lastIndexOf(c);
+// každé pravidlo: text pro manuál + funkce (vrací index drátu nebo -1 = nepoužije se)
+const WIRE_RULES={
+ 3:[["Když není žádný <b>červený</b> drát → přestřihni <b>druhý</b> drát.",w=>cnt(w,"R")===0?1:-1],
+    ["Jinak, když je poslední drát <b>bílý</b> → přestřihni <b>poslední</b> drát.",w=>w[2]==="W"?2:-1],
+    ["Jinak, když je víc než jeden <b>modrý</b> → přestřihni <b>poslední modrý</b>.",w=>cnt(w,"B")>1?lastIdx(w,"B"):-1],
+    ["Jinak přestřihni <b>poslední</b> drát.",w=>2]],
+ 4:[["Když je víc než jeden <b>červený</b> → přestřihni <b>poslední červený</b>.",w=>cnt(w,"R")>1?lastIdx(w,"R"):-1],
+    ["Jinak, když je poslední drát <b>žlutý</b> → přestřihni <b>první</b> drát.",w=>w[3]==="Y"?0:-1],
+    ["Jinak, když je právě jeden <b>modrý</b> → přestřihni <b>první</b> drát.",w=>cnt(w,"B")===1?0:-1],
+    ["Jinak přestřihni <b>druhý</b> drát.",w=>1]],
+ 5:[["Když je poslední drát <b>černý</b> → přestřihni <b>čtvrtý</b> drát.",w=>w[4]==="K"?3:-1],
+    ["Jinak, když je právě jeden <b>červený</b> a víc než jeden <b>žlutý</b> → přestřihni <b>první</b> drát.",w=>cnt(w,"R")===1&&cnt(w,"Y")>1?0:-1],
+    ["Jinak, když není žádný <b>černý</b> → přestřihni <b>druhý</b> drát.",w=>cnt(w,"K")===0?1:-1],
+    ["Jinak přestřihni <b>první</b> drát.",w=>0]]
+};
+const wireAnswer=w=>{for(const [,f] of WIRE_RULES[w.length]){const i=f(w);if(i>=0)return i;}};
+
+const BIN_W=[16,8,4,2,1];
+const SYMS=[["🐢",1],["🐬",2],["🐍",3],["🦊",5],["🦉",7]];
+const WORDS=["ROBOT","DATA","PIXEL","BAJT","HESLO","KLIC","MYS","CHIP","SIT","KOD","LOGIKA","BITY","OBRAZOVKA","SIFRA","MONITOR"];
+const caesar=(s,k)=>s.replace(/[A-Z]/g,c=>String.fromCharCode((c.charCodeAt(0)-65+k)%26+65));
+
+// bludiště 5×5 z pevného „semínka“ (stejné v hře i manuálu)
+function mulberry(a){return function(){a|=0;a=a+0x6D2B79F5|0;let t=Math.imul(a^a>>>15,1|a);t=t+Math.imul(t^t>>>7,61|t)^t;return((t^t>>>14)>>>0)/4294967296}}
+function makeMaze(seed){
+  const r=mulberry(seed),N=5;
+  const open=[...Array(N*N)].map(()=>({u:0,d:0,l:0,r:0}));
+  const seen=new Set([0]),st=[0];
+  while(st.length){
+    const c=st[st.length-1],x=c%N,y=(c/N)|0,nb=[];
+    if(y>0&&!seen.has(c-N))nb.push([c-N,"u","d"]);
+    if(y<N-1&&!seen.has(c+N))nb.push([c+N,"d","u"]);
+    if(x>0&&!seen.has(c-1))nb.push([c-1,"l","r"]);
+    if(x<N-1&&!seen.has(c+1))nb.push([c+1,"r","l"]);
+    if(!nb.length){st.pop();continue}
+    const [n,a,b]=nb[Math.floor(r()*nb.length)];
+    open[c][a]=1;open[n][b]=1;seen.add(n);st.push(n);
+  }
+  // pár zkratek navíc, ať to není jen jedna chodba
+  for(let k=0;k<3;k++){const c=Math.floor(r()*N*N),x=c%N;if(x<N-1){open[c].r=1;open[c+1].l=1}}
+  return open;
+}
+const MAZES=[{seed:11,mk:[1,19]},{seed:22,mk:[6,22]},{seed:33,mk:[10,4]},{seed:44,mk:[18,8]}].map((m,i)=>({...m,no:i+1,open:makeMaze(m.seed)}));
+
+// ================= ROZCESTNÍK =================
+function home(){
+  hud.innerHTML="";
+  app.innerHTML=`<div class="start">
+   <p style="font-size:22px">Robot v laboratoři se zbláznil. Zastavit ho můžete jen <b>spolu</b>.</p>
+   <div class="cards">
+    <div class="card"><div class="big">🧑‍🔧</div><h2>Technik</h2><p class="muted">Vidí robota a ovládá ho. Nezná pravidla a nesmí se dívat do manuálu.</p><button id="bT">Jsem technik</button></div>
+    <div class="card"><div class="big">📘</div><h2>Expert</h2><p class="muted">Má manuál s pravidly. Robota nevidí a nesmí se dívat na technikovu obrazovku.</p><button id="bE">Jsem expert</button></div>
+   </div>
+   <p class="muted">Hrají 2–3 hráči na dvou počítačích, otočených zády k sobě. Mluvit se smí, ukazovat ne.<br>Po každém kole si role vyměňte.</p></div>`;
+  $("#bT").onclick=()=>{location.hash="technik";};
+  $("#bE").onclick=()=>{location.hash="expert";};
+}
+
+// ================= MANUÁL =================
+function manual(){
+  hud.innerHTML=`<button class="ghost noprint" onclick="window.print()">🖨️ Vytisknout</button>`;
+  let h=`<div class="man"><h1>📘 Manuál experta</h1>
+  <p>Robot má <b>4 moduly</b>. Zeptej se technika, co vidí, najdi správné pravidlo a řekni mu, co má udělat. Moduly můžete řešit v libovolném pořadí. Každá chyba = 1 přehřátí, po 3 přehřátích robot vybuchne. 💥</p>`;
+  h+=`<h2>✂️ Modul 1: Dráty</h2><p>Zeptej se, <b>kolik</b> drátů robot má a jaké mají <b>barvy</b> (shora dolů). Pravidla čti <b>shora</b> a použij <b>první</b>, které platí.</p>`;
+  for(const n of [3,4,5]){h+=`<h3>${n} dráty${n===5?" (5 drátů)":""}</h3>`;WIRE_RULES[n].forEach(([t])=>h+=`<div class="rule">${t}</div>`);}
+  h+=`<h2>💡 Modul 2: Světelný displej</h2>
+  <div class="rule">Lampy mají zleva doprava hodnoty <b>16 · 8 · 4 · 2 · 1</b>. Sečti hodnoty lamp, které <b>svítí</b>.</div>
+  <div class="rule">Když je displej <b>červený</b>, technik zadá výsledek <b>o 1 větší</b>.</div>
+  <div class="rule">Když je displej <b>modrý</b>, technik zadá výsledek přesně.</div>
+  <p>Příklad: ●○●○○ na modrém displeji = 16 + 4 = <b>20</b>.</p>`;
+  h+=`<h2>🔐 Modul 3: Šifra</h2><p>Technik vidí zvíře a zašifrované slovo. Zvíře říká, o kolik bylo každé písmeno <b>posunuto dopředu</b>. Musíte ho posunout zpátky.</p><table><tr><th>Zvíře</th><th>Posun</th></tr>`;
+  SYMS.forEach(([s,k])=>h+=`<tr><td style="font-size:26px">${s}</td><td>${k}</td></tr>`);
+  h+=`</table><p>Abeceda: <b style="letter-spacing:3px">ABCDEFGHIJKLMNOPQRSTUVWXYZ</b><br>Příklad: 🐍 a <b>NOLF</b> → posun 3 zpátky → <b>KLIC</b>.</p>`;
+  h+=`<h2>🗺️ Modul 4: Bludiště</h2><p>Technik vidí 5×5 políček, dva kroužky ⭕, robota 🤖 a východ 🚪, ale <b>nevidí zdi</b>. Podle kroužků najdi správné bludiště a naveď robota k východu (nahoru / dolů / doleva / doprava). Náraz do zdi = přehřátí.</p><div class="mazes">`;
+  MAZES.forEach(m=>h+=`<figure>${mazeSvg(m)}<figcaption>Bludiště ${m.no}</figcaption></figure>`);
+  h+=`</div><p style="margin-top:24px">Tip: dohodněte se, jak budete políčka pojmenovávat (např. „řádek 2, sloupec 4“).</p></div>`;
+  app.innerHTML=h;
+}
+function mazeSvg(m){
+  const S=36,P=6,W=5*S+2*P;let s=`<svg viewBox="0 0 ${W} ${W}" width="200" height="200" style="background:#fff">`;
+  m.mk.forEach(c=>s+=`<circle cx="${P+(c%5)*S+S/2}" cy="${P+((c/5)|0)*S+S/2}" r="11" fill="none" stroke="#e63946" stroke-width="3"/>`);
+  for(let c=0;c<25;c++){const x=P+(c%5)*S,y=P+((c/5)|0)*S,o=m.open[c];
+    s+=`<circle cx="${x+S/2}" cy="${y+S/2}" r="2" fill="#bbb"/>`;
+    if(!o.u)s+=`<line x1="${x}" y1="${y}" x2="${x+S}" y2="${y}" stroke="#111" stroke-width="4" stroke-linecap="round"/>`;
+    if(!o.l)s+=`<line x1="${x}" y1="${y}" x2="${x}" y2="${y+S}" stroke="#111" stroke-width="4" stroke-linecap="round"/>`;
+    if(!o.d)s+=`<line x1="${x}" y1="${y+S}" x2="${x+S}" y2="${y+S}" stroke="#111" stroke-width="4" stroke-linecap="round"/>`;
+    if(!o.r)s+=`<line x1="${x+S}" y1="${y}" x2="${x+S}" y2="${y+S}" stroke="#111" stroke-width="4" stroke-linecap="round"/>`;}
+  return s+`</svg>`;
+}
+
+// ================= HRA (technik) =================
+const LIMIT=6*60;
+let G=null,tick=null;
+function newRound(){
+  const nW=3+rnd(3),wires=[...Array(nW)].map(()=>pick("RBYWK"));
+  let lamps;do{lamps=BIN_W.map(()=>rnd(2))}while(!lamps.some(Boolean));
+  const red=Math.random()<.5,[sym,k]=pick(SYMS),word=pick(WORDS);
+  const mz=pick(MAZES);let a,b;
+  do{a=rnd(25);b=rnd(25)}while(Math.abs(a%5-b%5)+Math.abs(((a/5)|0)-((b/5)|0))<4||mz.mk.includes(a)||mz.mk.includes(b));
+  G={t0:Date.now(),strikes:0,done:[0,0,0,0],over:false,
+     wires,cut:[],wireOk:wireAnswer(wires),
+     lamps,red,binOk:lamps.reduce((s,v,i)=>s+v*BIN_W[i],0)+(red?1:0),
+     sym,word,enc:caesar(word,k),
+     mz,pos:a,exit:b};
+  renderGame();clearInterval(tick);tick=setInterval(upd,250);upd();
+}
+function upd(){
+  if(!G||G.over)return;
+  const left=Math.max(0,LIMIT-Math.floor((Date.now()-G.t0)/1000));
+  hud.innerHTML=`<span>⏱️ ${Math.floor(left/60)}:${String(left%60).padStart(2,"0")}</span><span>🔥 ${"●".repeat(G.strikes)}${"○".repeat(3-G.strikes)}</span>`;
+  if(left===0)end(false,"Došel čas.");
+}
+function strike(mod){
+  G.strikes++;const el=$("#m"+mod);el.classList.remove("flash");void el.offsetWidth;el.classList.add("flash");
+  upd();if(G.strikes>=3)end(false,"Robot se přehřál (3 chyby).");
+}
+function solve(i){G.done[i]=1;$("#m"+i).classList.add("done");if(G.done.every(Boolean))end(true);}
+function end(win,why){
+  G.over=true;clearInterval(tick);
+  const s=Math.floor((Date.now()-G.t0)/1000),t=`${Math.floor(s/60)}:${String(s%60).padStart(2,"0")}`;
+  $("#ovbox").innerHTML=win?`<div style="font-size:70px">🎉🤖💤</div><h2>Robot zneškodněn!</h2><p>Čas <b>${t}</b> · přehřátí <b>${G.strikes}</b> ${G.strikes===0?"· ⭐ bez chyby!":""}</p><p class="muted">Vyměňte si role a zkuste to znovu.</p><button id="again">Další kolo</button>`
+   :`<div style="font-size:70px">💥</div><h2>BUM!</h2><p>${why}</p><p class="muted">Co Vám v domluvě nefungovalo? Zkuste to znovu.</p><button id="again">Další kolo</button>`;
+  $("#ov").style.display="flex";$("#again").onclick=()=>{$("#ov").style.display="none";newRound();};
+}
+function renderGame(){
+  const g=G;
+  let h=`<div class="grid">`;
+  // dráty
+  h+=`<div class="mod" id="m0"><h2>✂️ Dráty</h2><div class="body">${g.wires.map((c,i)=>`<div class="wire" data-i="${i}"><span class="lbl">${i+1}.</span><div class="bar" style="background:${COLORS[c].c}"></div><span class="muted" style="width:80px">${COLORS[c].n}</span></div>`).join("")}<p class="muted">Klikni na drát = přestřihnout.</p></div></div>`;
+  // binár
+  h+=`<div class="mod" id="m1"><h2>💡 Světelný displej</h2><div class="body"><div class="lamps" style="background:${g.red?"#7a1830":"#1d4e9e"}">${g.lamps.map(v=>`<div class="lamp ${v?"on":""}"></div>`).join("")}</div><div class="row"><input id="binIn" inputmode="numeric" placeholder="číslo"><button id="binBtn">Zadat</button></div></div></div>`;
+  // šifra
+  h+=`<div class="mod" id="m2"><h2>🔐 Šifra</h2><div class="body"><div class="sym">${g.sym}</div><div class="cipher">${g.enc}</div><div class="row"><input id="cIn" placeholder="rozluštěné slovo"><button id="cBtn">Zadat</button></div></div></div>`;
+  // bludiště
+  h+=`<div class="mod" id="m3"><h2>🗺️ Bludiště</h2><div class="body"><div class="maze" id="mz"></div><div class="pad"><span></span><button data-d="u">⬆️</button><span></span><button data-d="l">⬅️</button><span></span><button data-d="r">➡️</button><span></span><button data-d="d">⬇️</button><span></span></div></div></div>`;
+  h+=`</div><p class="muted" style="text-align:center">Expert má manuál na adrese <b>${location.host}${location.pathname}#expert</b></p>`;
+  app.innerHTML=h;
+  document.querySelectorAll(".wire").forEach(el=>el.onclick=()=>{
+    if(G.over||G.done[0])return;const i=+el.dataset.i;if(G.cut.includes(i))return;
+    G.cut.push(i);el.classList.add("cut");if(i===G.wireOk)solve(0);else strike(0);
+  });
+  const bin=()=>{const v=parseInt($("#binIn").value,10);if(isNaN(v)||G.over)return;if(v===G.binOk)solve(1);else{strike(1);$("#binIn").value="";}};
+  $("#binBtn").onclick=bin;$("#binIn").onkeydown=e=>{if(e.key==="Enter")bin()};
+  const ci=()=>{const v=norm($("#cIn").value);if(!v||G.over)return;if(v===G.word)solve(2);else{strike(2);$("#cIn").value="";}};
+  $("#cBtn").onclick=ci;$("#cIn").onkeydown=e=>{if(e.key==="Enter")ci()};
+  drawMaze();
+  document.querySelectorAll(".pad button").forEach(b=>b.onclick=()=>move(b.dataset.d));
+}
+function drawMaze(){
+  let h="";for(let c=0;c<25;c++){h+=`<div class="cell">${c===G.pos?"🤖":c===G.exit?"🚪":G.mz.mk.includes(c)?"⭕":""}</div>`;}
+  $("#mz").innerHTML=h;
+}
+function move(d){
+  if(G.over||G.done[3])return;
+  if(!G.mz.open[G.pos][d]){strike(3);return}
+  G.pos+= d==="u"?-5:d==="d"?5:d==="l"?-1:1;drawMaze();
+  if(G.pos===G.exit)solve(3);
+}
+window.addEventListener("keydown",e=>{
+  if(!G||G.over||location.hash!=="#technik"||document.activeElement.tagName==="INPUT")return;
+  const m={ArrowUp:"u",ArrowDown:"d",ArrowLeft:"l",ArrowRight:"r"}[e.key];if(m){e.preventDefault();move(m);}
+});
+
+function route(){
+  clearInterval(tick);G=null;$("#ov").style.display="none";
+  if(location.hash==="#expert")manual();else if(location.hash==="#technik")newRound();else home();
+}
+window.addEventListener("hashchange",route);route();
+})();
+</script>
+</body>
+</html>
