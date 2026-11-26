@@ -73,10 +73,12 @@ h1{font-size:52px;display:inline-block;margin-right:20px}
 .cols{margin-top:14px;grid-template-columns:1.35fr 1fr}
 .stack{font-size:21px}
 .hat,.blk{margin:3px 0}
+.blk.in{margin-left:22px}
 .step{font-size:21px;margin:9px 0}
 .goal,.think{font-size:20px;margin-top:10px;padding:10px 14px}
 footer{position:absolute;bottom:8px;left:0;right:0;margin:0}
 @media (max-width:1000px){.cols,.grid2,.three{grid-template-columns:auto}}
+.plus{margin-top:10px;background:#f3e8ff;border-left:8px solid var(--math);padding:10px 14px;border-radius:10px;font-size:20px}
 </style>
 </head>
 <body>
@@ -99,27 +101,27 @@ footer{position:absolute;bottom:8px;left:0;right:0;margin:0}
         <div class="stack">
           <div class="hat" style="background:var(--basic)">při startu</div><br>
           <div class="blk in" style="background:var(--var);border-color:var(--basic)">nastav <span class="pill v">moje</span> na <span class="pill">N</span> ← tvoje číslo!</div><br>
-          <div class="blk in" style="background:var(--radio);border-color:var(--basic)">rádio nastav skupinu <span class="pill v">moje</span></div><br>
-          <div class="blk in" style="background:var(--basic);border-color:var(--basic)">ukaž číslo <span class="pill v">moje</span></div>
+          <div class="blk in" style="background:var(--radio);border-color:var(--basic)">nastav skupinu rádia na <span class="pill v">moje</span></div><br>
+          <div class="blk in" style="background:var(--basic);border-color:var(--basic)">zobraz číslo <span class="pill v">moje</span></div>
           <div class="cat">Základní · Proměnné · Rádio</div>
         </div>
         <div class="stack">
-          <div class="hat" style="background:var(--fn)">funkce posli <span class="pill" style="background:#9fb0ff">cislo</span></div><br>
-          <div class="blk in" style="background:var(--radio);border-color:var(--fn)">rádio nastav skupinu <span class="pill m"><span class="pill v">moje</span>+ 1</span></div><br>
-          <div class="blk in" style="background:var(--radio);border-color:var(--fn)">rádio pošli číslo <span class="pill" style="background:#9fb0ff">cislo</span></div><br>
-          <div class="blk in" style="background:var(--radio);border-color:var(--fn)">rádio nastav skupinu <span class="pill v">moje</span></div>
+          <div class="hat" style="background:var(--fn)">funkce posli <span class="pill" style="background:#ff8fa8">číslo</span></div><br>
+          <div class="blk in" style="background:var(--radio);border-color:var(--fn)">nastav skupinu rádia na <span class="pill m"><span class="pill v">moje</span>+ 1</span></div><br>
+          <div class="blk in" style="background:var(--radio);border-color:var(--fn)">odešli rádiem číslo <span class="pill" style="background:#ff8fa8">číslo</span></div><br>
+          <div class="blk in" style="background:var(--radio);border-color:var(--fn)">nastav skupinu rádia na <span class="pill v">moje</span></div>
           <div class="cat">Pokročilé → Funkce · Matematika</div>
         </div>
         <div class="stack">
-          <div class="hat" style="background:var(--input)">při stisku tlačítka A</div><br>
-          <div class="blk in" style="background:var(--fn);border-color:var(--input)">zavolej posli <span class="pill">1</span></div>
+          <div class="hat" style="background:var(--input)">při stisknutí tlačítka A</div><br>
+          <div class="blk in" style="background:var(--fn);border-color:var(--input)">vykonej posli <span class="pill">1</span></div>
           <div class="cat">Vstup · Funkce (startuje jen hráč č. 1)</div>
         </div>
         <div class="stack">
-          <div class="hat" style="background:var(--radio)">při přijetí rádiového čísla <span class="pill" style="background:#ffb3df">receivedNumber</span></div><br>
-          <div class="blk in" style="background:var(--basic);border-color:var(--radio)">ukaž číslo <span class="pill m"><span class="pill" style="background:#ffb3df">receivedNumber</span>+ 1</span></div><br>
-          <div class="blk in" style="background:var(--basic);border-color:var(--radio)">pozastav (ms) <span class="pill">300</span></div><br>
-          <div class="blk in" style="background:var(--fn);border-color:var(--radio)">zavolej posli <span class="pill m"><span class="pill" style="background:#ffb3df">receivedNumber</span>+ 1</span></div>
+          <div class="hat" style="background:var(--radio)">při přijetí čísla <span class="pill" style="background:#ffb3df">receivedNumber</span></div><br>
+          <div class="blk in" style="background:var(--basic);border-color:var(--radio)">zobraz číslo <span class="pill m"><span class="pill" style="background:#ffb3df">receivedNumber</span>+ 1</span></div><br>
+          <div class="blk in" style="background:var(--basic);border-color:var(--radio)">čekej <span class="pill">300</span> ms</div><br>
+          <div class="blk in" style="background:var(--fn);border-color:var(--radio)">vykonej posli <span class="pill m"><span class="pill" style="background:#ffb3df">receivedNumber</span>+ 1</span></div>
           <div class="cat">Rádio · Základní · Funkce · Matematika</div>
         </div>
       </div>
@@ -132,6 +134,7 @@ footer{position:absolute;bottom:8px;left:0;right:0;margin:0}
       <div class="step"><div class="n">3</div><div>Připoj micro:bit kabelem → <b>Stáhnout</b> → spárovat → nahrát.</div></div>
       <div class="step"><div class="n">4</div><div>Zůstaňte u svých počítačů, rádio dosáhne přes celou třídu. Až budou všichni připravení, hráč č. 1 zmáčkne <b>A</b>.</div></div>
       <div class="goal">🏁 <b>Cíl:</b> poslední micro:bit ukáže, <b>kolik nás je</b>.<br>⏱️ Změřte čas a zkuste ho zkrátit!</div>
+      <div class="plus"><b>➕ Jak udělat „+ 1“:</b> <b>Matematika</b> → první blok <span class="pill m">0 + 0</span> přetáhni do políčka. Do levé nuly vlož <span class="pill v">moje</span> (z Proměnných) nebo <span class="pill" style="background:#ffb3df">receivedNumber</span> (přetáhni ho z hlavičky bloku <i>při přijetí čísla</i>). Do pravé napiš <b>1</b>.</div>
       <div class="think">🤔 Co se stane, když dva zvolí <b>stejné číslo</b>?<br>🤔 A co když jedno číslo v řadě <b>chybí</b>?</div>
     </div>
   </div>
